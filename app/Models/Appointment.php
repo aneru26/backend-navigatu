@@ -28,34 +28,19 @@ class Appointment extends Model
      * The primary key associated with the table.
      *
      * @var string
-     */   
+     */
+    protected $foreignKey = 'id';    
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'created_by',
+        'id',
         'area',
+        'details',
         'event_date', 
         'start_time', 
         'end_time'
     ];
-
-    static public function facultygetRecord()
-{
-    $userId = auth()->id();
-
-    $return = Appointment::select(
-            'appointment.*',
-            'users.name as created_by',
-        )
-        ->join('users', 'users.id', '=', 'appointment.created_by')
-        ->where('homework.created_by', '=', $userId)
-        ->orderBy('appointment.id', 'desc')
-        ->get();
-
-    return $return;
-}
-
 }

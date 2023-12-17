@@ -22,10 +22,13 @@ class AppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'area'          => 'required|string|max:50',
-            'event_date'    => 'required|date|date_format:Y-m-d|after_or_equal:today',
-            'start_time'    => 'required|date_format:H:i',
+            'id'            => 'sometimes|exists:users,id', //sometimes will let the id optional but required if provided
+            'area'          => 'required|string|in:conference room,navigatu hall|max:50',
+            'details'       => 'nullable|string',
+            'event_date'    => 'required|date|date_format:Y-m-d',
+            'start_time'    => 'required|date_format:H:i', // Hours and minutes
             'end_time'      => 'required|date_format:H:i|after:start_time',
+            'status'        => 'nullable|string|in:pending,reserved,cancelled,done|max:50',
         ];
     }
 }

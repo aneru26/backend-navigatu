@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Response;
 use App\Models\Appointment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
 use Illuminate\Support\Facades\Auth;
+
 
 
 class AppointmentController extends Controller
@@ -25,6 +25,12 @@ class AppointmentController extends Controller
      */
     public function store(AppointmentRequest $request)
     {
+        // $validated = $request->validated();
+
+        // $appointment = Appointment::create($validated);
+
+        // return $appointment;
+
         $validated = $request->validated();
     
         // Create the appointment
@@ -40,11 +46,6 @@ class AppointmentController extends Controller
     
         return response()->json(['message' => 'Appointment successfully created', 'appointment' => $appointment], 201);
     }
-    
-    
-
-
-
 
     /**
      * Display the specified resource.
@@ -81,6 +82,12 @@ class AppointmentController extends Controller
      */
     public function destroy(string $id)
     {
+        // $appointment = Appointment::findOrfail($id);
+
+        // $appointment->delete();
+
+        // return $appointment;
+
         try {
             $appointment = Appointment::findOrFail($id);
             $appointment->delete();
@@ -92,14 +99,9 @@ class AppointmentController extends Controller
     }
 
     public function customerlist()
-{
-    
-    $data = Appointment::facultygetRecord();
-    return $data;
-}
-
-
-
-    
-
+    {
+        
+        $data = Appointment::facultygetRecord();
+        return $data;
+    }
 }

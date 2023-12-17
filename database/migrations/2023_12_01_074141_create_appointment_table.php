@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('appointment', function (Blueprint $table) {
             $table->id('appointment_no');
-            $table->integer('created_by')->nullable(); // This establishes the foreign key relationship
+            //$table->foreignId('user_id')->constrained('users');
+            $table->foreignId('id')->references('id')->on('users');
+            //$table->foreignId('area_id')->references('area_id')->on('area');
+            $table->string('details');
             $table->string('area');
             $table->time('start_time');
             $table->time('end_time');
+            $table->string('status');
             $table->date('event_date');
             $table->timestamps();
         });
@@ -30,4 +34,3 @@ return new class extends Migration
         Schema::dropIfExists('appointment');
     }
 };
-
