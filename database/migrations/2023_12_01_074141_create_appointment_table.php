@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id('appointment_no');
             $table->integer('created_by')->nullable(); // This establishes the foreign key relationship
             $table->string('area');
+            $table->string('details');
             $table->time('start_time');
             $table->time('end_time');
             $table->date('event_date');
+            $table->string('status');
             $table->timestamps();
         });
     }
