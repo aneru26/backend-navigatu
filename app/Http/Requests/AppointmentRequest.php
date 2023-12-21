@@ -22,10 +22,12 @@ class AppointmentRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'event_name'    => 'required|string|max:50',
             'area'          => 'required|string|max:50',
             'event_date'    => 'required|date|date_format:Y-m-d|after_or_equal:today',
-            'start_time'    => 'required|date_format:H:i',
-            'end_time'      => 'required|date_format:H:i|after:start_time',
+            'start_time'    => 'required|',
+            'end_time'      => 'required|',
+            'status'        => 'string|nullable',
         ];
     }
 }

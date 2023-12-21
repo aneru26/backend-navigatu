@@ -16,25 +16,35 @@ class AuthController extends Controller
      * Login the specified resource.
      */
     public function login(UserRequest $request)
-    {
-        $user = User::where('email', $request->email)->first();
-     
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
-        }
+{
+    $user = User::where('email', $request->email)->first();
 
-        $user->load('role');
-        
-        $response = [
-            'user'      => $user,
-            'token'     => $user->createToken($request->email)->plainTextToken,
-            'success'   => 'Login successfully',
-        ];
-     
-        return $response;
+    if (!$user || !Hash::check($request->password, $user->password)) {
+        throw ValidationException::withMessages([
+            'email' => ['The provided credentials are incorrect.'],
+        ]);
     }
+
+    $user->load('role');
+
+    $response = [
+        'user' => [
+            'id' => $user->id,
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'organization' => $user->organization,
+            'email' => $user->email,
+            'email_verified_at' => $user->email_verified_at,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at,
+            'role' => $user->role,
+        ],
+        'token' => $user->createToken($request->email)->plainTextToken,
+        'success' => 'Login successfully',
+    ];
+
+    return response()->json($response);
+}
 
     /**
      * Logout the specified resource.
@@ -44,7 +54,8 @@ class AuthController extends Controller
         $request->user()->tokens()->delete();
 
         $response = [
-            'message'       => 'Logout'
+            'message'       => 'Logout',
+            'success' => 'Logout successfully',
         ];
 
         return $response;

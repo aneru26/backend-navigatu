@@ -11,7 +11,7 @@ class SignupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -26,6 +26,8 @@ class SignupRequest extends FormRequest
                 'name'      => 'required|string|max:255',
                 'email'     => 'required|string|email|unique:App\Models\User,email|max:255',
                 'password'  => 'required|min:8|string|confirmed',
+                'phone'  => 'nullable|string|max:255',
+                'organization' => 'nullable|string|max:255',
             ];
         }
     }

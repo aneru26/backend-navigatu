@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('appointment', function (Blueprint $table) {
             $table->id('appointment_no');
-            $table->integer('created_by')->nullable(); // This establishes the foreign key relationship
+            $table->unsignedBigInteger('created_by')->nullable(); // This establishes the foreign key relationship
+            $table->foreign('created_by')->references('id')->on('users');
             $table->string('area');
+            $table->string('event_name');
             $table->time('start_time');
             $table->time('end_time');
             $table->date('event_date');
+            $table->string('status')->nullable();
             $table->timestamps();
+            
         });
     }
 

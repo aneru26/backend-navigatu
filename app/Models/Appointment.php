@@ -35,27 +35,18 @@ class Appointment extends Model
      * @var array
      */
     protected $fillable = [
+        'event_name',
         'created_by',
         'area',
         'event_date', 
         'start_time', 
-        'end_time'
+        'end_time',
+        'status'
     ];
 
-    static public function facultygetRecord()
-{
-    $userId = auth()->id();
 
-    $return = Appointment::select(
-            'appointment.*',
-            'users.name as created_by',
-        )
-        ->join('users', 'users.id', '=', 'appointment.created_by')
-        ->where('homework.created_by', '=', $userId)
-        ->orderBy('appointment.id', 'desc')
-        ->get();
-
-    return $return;
-}
-
+    public function createdByUser()
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
 }

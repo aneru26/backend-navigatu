@@ -8,18 +8,30 @@ use App\Models\Appointment;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppointmentRequest;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
+use Carbon\Carbon;
+use App\Models\User;
 
 class AppointmentController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        return Appointment::all();
-    } 
+ 
 
+     public function showall()
+{
+    return Appointment::with('createdByUser')->get();
+}
+
+    public function index(Request $request)
+{
+    $appointments = Appointment::with('createdByUser')->where('created_by', $request->user()->id)->get();
+
+    // Return the appointments as a non-JSON response
+    return $appointments;
+}
     /**
      * Store a newly created resource in storage.
      */
@@ -27,12 +39,38 @@ class AppointmentController extends Controller
     {
         $validated = $request->validated();
     
+        // Check for overlapping appointments only if the areas are the same
+        if (Appointment::where('event_date', $request->event_date)
+            ->where('area', $request->area)
+            ->where(function ($query) use ($request) {
+                $query->where(function ($query) use ($request) {
+                    $query->where('start_time', '>=', $request->start_time)
+                        ->where('start_time', '<', $request->end_time)
+                        ->where('end_time', '>', $request->start_time);
+                })
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('start_time', '<=', $request->start_time)
+                        ->where('end_time', '>=', $request->end_time)
+                        ->where('end_time', '<=', $request->end_time);
+                })
+                ->orWhere(function ($query) use ($request) {
+                    $query->where('start_time', '<=', $request->start_time)
+                        ->where('end_time', '>=', $request->end_time)
+                        ->where('start_time', '>=', $request->start_time);
+                });
+            })
+            ->exists()) {
+            return response()->json(['error' => 'Area is occupied during the specified time'], 422);
+        }
+    
         // Create the appointment
         $appointment = new Appointment;
         $appointment->area = trim($request->area);
+        $appointment->event_name = trim($request->event_name);
         $appointment->start_time = trim($request->start_time);
         $appointment->end_time = trim($request->end_time);
         $appointment->event_date = trim($request->event_date);
+        $appointment->status = trim($request->status);
         $appointment->created_by = Auth::user()->id;
     
         // Save the appointment to the database
@@ -42,9 +80,7 @@ class AppointmentController extends Controller
     }
     
     
-
-
-
+    
 
     /**
      * Display the specified resource.
@@ -65,15 +101,18 @@ class AppointmentController extends Controller
         $validated = $request->validated();
  
         $appointment->update([
+            'event_name' => $validated['event_name'],
+            'status' => $validated['status'],
             'area' => $validated['area'],
             'event_date' => $validated['event_date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
         ]);
         
+        
         $appointment->save();
 
-        return $appointment;
+        return response()->json(['message' => 'Appointment successfully Updated', 'appointment' => $appointment], 201);
     }
 
     /**
@@ -90,16 +129,27 @@ class AppointmentController extends Controller
             return response()->json(['message' => 'Appointment not found'], 404);
         }
     }
-
-    public function customerlist()
-{
     
-    $data = Appointment::facultygetRecord();
-    return $data;
+    public function accept(Request $request, string $id)
+{
+    $appointment = Appointment::findOrFail($id);
+    
+    $appointment->status = 'accepted';
+    $appointment->save();
+
+    return response()->json(['message' => 'Appointment successfully accepted', 'appointment' => $appointment], 200);
 }
 
-
-
+/**
+ * Decline the specified appointment.
+ */
+public function decline(Request $request, string $id)
+{
+    $appointment = Appointment::findOrFail($id);
     
+    $appointment->status = 'declined';
+    $appointment->save();
 
+    return response()->json(['message' => 'Appointment successfully declined', 'appointment' => $appointment], 200);
+}
 }

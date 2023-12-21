@@ -29,18 +29,14 @@ Route::middleware(['auth:sanctum', 'customer'])->group(function () {
 
     Route::get('/customer/dashboard', 'CustomerController@dashboard');
 
-Route::controller(AppointmentController::class)->group(function () {
-    
-    Route::resource('appointment', AppointmentController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
-    Route::get('/appointment/mylist', 'customerlist');
 
-});
 });
 
 // Admin routes (accessible only to admins)
 Route::middleware(['auth:sanctum', 'admin'])->group(function () {
 
     Route::get('/admin/dashboard', 'AdminController@dashboard');
+    
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/user', 'index');
@@ -51,27 +47,26 @@ Route::controller(UserController::class)->group(function () {
 });
 
 
-Route::controller(EventRemarksController::class)->group(function () {
-    Route::get('/eventremarks/{id}', 'show');
-    Route::put('/eventremarks/{id}', 'update');
-    });
+Route::controller(AppointmentController::class)->group(function () {
+    
+   
+    Route::get('/allappointment', 'showall');
+    Route::post('/appointment/{id}/accept', 'accept')->name('appointment.accept');
+    Route::post('/appointment/{id}/decline', 'decline')->name('appointment.decline');
+
+});
 });
 
 
 // Common routes (accessible only to both)
 Route::middleware(['auth:sanctum', 'common'])->group(function () {
     Route::get('/common/dashboard', 'CommonController@dashboard');
-
-    Route::get('/logout', [AuthController::class, 'logout']);
-
-    Route::put('/user/password/{id}', [UserController::class, 'password'])->name('user.password');
-
-    Route::get('/eventremarks', [EventRemarksController::class, 'index']);
-
-Route::controller(AppointmentController::class)->group(function () {
-    Route::get('/appointment', 'index');
-    Route::get('/appointment/{id}', 'show');
-    Route::delete('/appointment/{id}', 'destroy')->name('appointment.delete');
-});
     
+    Route::get('/logout', [AuthController::class, 'logout']);
+    
+    Route::put('/user/password/{id}', [UserController::class, 'password'])->name('user.password');
+    
+    Route::resource('appointment', AppointmentController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
+    
+    Route::get('/eventremarks', [EventRemarksController::class, 'index']);
 });
