@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -141,5 +142,18 @@ class UserController extends Controller
         $user->delete();
 
         return $user;
+    }
+
+    public function MyAccount()
+    {
+        $user = Auth::user();
+
+        // Assuming you have a 'role' column in your 'users' table
+        $userData = User::where('id', $user->id)->first();
+
+        return response()->json([
+            'data' => $userData,
+            'message' => 'User information retrieved successfully.',
+        ]);
     }
 }

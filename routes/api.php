@@ -53,7 +53,6 @@ Route::controller(AppointmentController::class)->group(function () {
     Route::get('/allappointment', 'showall');
     Route::post('/appointment/{id}/accept', 'accept')->name('appointment.accept');
     Route::post('/appointment/{id}/decline', 'decline')->name('appointment.decline');
-
 });
 });
 
@@ -69,4 +68,6 @@ Route::middleware(['auth:sanctum', 'common'])->group(function () {
     Route::resource('appointment', AppointmentController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
     
     Route::get('/eventremarks', [EventRemarksController::class, 'index']);
+    
+    Route::get('/myaccount', [UserController::class, 'MyAccount']);
 });

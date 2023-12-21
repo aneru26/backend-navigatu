@@ -102,7 +102,6 @@ class AppointmentController extends Controller
  
         $appointment->update([
             'event_name' => $validated['event_name'],
-            'status' => $validated['status'],
             'area' => $validated['area'],
             'event_date' => $validated['event_date'],
             'start_time' => $validated['start_time'],
